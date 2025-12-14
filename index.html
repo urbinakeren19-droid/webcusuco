@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dashboard principal del Parque Nacional El Cusuco - Honduras">
+    <title>Parque Nacional El Cusuco - Inicio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Configuración personalizada de Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                        },
+                        stone: {
+                            50: '#fafaf9',
+                            100: '#f5f5f4',
+                            800: '#292524',
+                            900: '#1c1917',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-out',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+        
+        body { font-family: 'Montserrat', sans-serif; }
+        
+        /* Estilos para el estado colapsado del Sidebar */
+        #sidebar.collapsed {
+            width: 5rem; /* w-20 */
+        }
+        
+        #sidebar.collapsed .logo-text,
+        #sidebar.collapsed .nav-text,
+        #sidebar.collapsed .section-title, 
+        #sidebar.collapsed .footer-text {
+            opacity: 0;
+            pointer-events: none;
+            display: none;
+        }
+
+        #sidebar.collapsed .nav-item {
+            padding-left: 0;
+            padding-right: 0;
+            justify-content: center;
+        }
+        
+        #sidebar.collapsed .nav-icon {
+            margin-right: 0;
+        }
+
+        #sidebar.collapsed .logo-container {
+            padding-left: 0;
+            padding-right: 0;
+            justify-content: center;
+        }
+        
+        #sidebar.collapsed .logo-icon {
+            margin-right: 0;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(90deg, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0) 100%);
+            color: #34d399; /* emerald-400 */
+            border-left: 3px solid #10b981;
+        }
+    </style>
+</head>
+<body class="bg-[#f8fafc] text-stone-800 h-screen overflow-hidden flex selection:bg-emerald-200">
+
+    <!-- 1. SIDEBAR (Navegación) -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-[#1c1917] text-stone-300 transform -translate-x-full transition-all duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.2)] border-r border-stone-800">
+        
+        <!-- Toggle Button (Escritorio) -->
+        <button onclick="toggleSidebar()" class="hidden md:flex absolute -right-3 top-24 bg-emerald-600 text-white p-1 rounded-full shadow-lg hover:bg-emerald-500 transition-colors z-50 border border-emerald-700">
+            <i data-lucide="chevron-left" id="toggle-icon" class="h-4 w-4 transition-transform duration-300"></i>
+        </button>
+
+        <!-- Logo -->
+        <div class="h-28 flex items-center px-8 border-b border-stone-800/50 logo-container transition-all">
+            <div class="relative flex items-center justify-center">
+                <div class="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full"></div>
+                <!-- Mascota en el Logo -->
+                <img src="https://www.dropbox.com/scl/fi/njwz6enhkgn6bf26qi4pz/Dise-o_sin_t-tulo_V2.gif?rlkey=4w45c9c9dpi4i1j7jvi08geu8&st=ypparvdj&raw=1" 
+                     alt="Logo Cusquito" 
+                     class="relative h-12 w-auto object-contain mr-3 logo-icon transition-all hover:scale-110">
+            </div>
+            <div class="logo-text transition-opacity duration-200">
+                <h1 class="font-bold text-lg leading-tight tracking-wide text-white">EL CUSUCO</h1>
+                <p class="text-[10px] text-emerald-500 font-bold tracking-[0.2em] uppercase">Parque Nacional</p>
+            </div>
+        </div>
+
+        <!-- Menú -->
+        <nav class="flex-1 py-8 space-y-2 px-3 overflow-y-auto scrollbar-hide">
+            <!-- Dashboard activo -->
+            <a href="#" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl hover:bg-white/5 text-stone-400 hover:text-white transition-all group active mb-6">
+                <i data-lucide="layout-grid" class="h-5 w-5 mr-3 nav-icon group-hover:text-emerald-400 transition-colors"></i>
+                <span class="font-medium nav-text whitespace-nowrap">Inicio</span>
+            </a>
+            
+            <div class="section-title px-4 pb-3 text-[10px] font-bold text-stone-600 uppercase tracking-widest transition-opacity duration-200">
+                Explorar
+            </div>
+            
+            <!-- Enlaces del Sidebar (Coinciden con los targets) -->
+            <a href="exploracion.html" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl text-stone-400 hover:bg-white/5 hover:text-white transition-all group">
+                <i data-lucide="compass" class="h-5 w-5 mr-3 nav-icon group-hover:text-emerald-400 transition-colors"></i>
+                <span class="font-medium nav-text whitespace-nowrap">Exploración</span>
+            </a>
+            <a href="campana.html" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl text-stone-400 hover:bg-white/5 hover:text-white transition-all group">
+                <i data-lucide="megaphone" class="h-5 w-5 mr-3 nav-icon group-hover:text-emerald-400 transition-colors"></i>
+                <span class="font-medium nav-text whitespace-nowrap">Campaña</span>
+            </a>
+            <a href="recurso.html" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl text-stone-400 hover:bg-white/5 hover:text-white transition-all group">
+                <i data-lucide="book-open" class="h-5 w-5 mr-3 nav-icon group-hover:text-emerald-400 transition-colors"></i>
+                <span class="font-medium nav-text whitespace-nowrap">Recurso</span>
+            </a>
+        </nav>
+
+        <!-- Footer Sidebar -->
+        <div class="p-6 border-t border-stone-800/50 bg-stone-900/30 backdrop-blur-sm">
+            <div class="flex items-center gap-3 logo-container transition-all">
+                <div class="h-10 w-10 min-w-[2.5rem] rounded-full bg-gradient-to-tr from-emerald-900 to-stone-800 flex items-center justify-center text-emerald-500 border border-white/10 shadow-lg logo-icon">
+                    <i data-lucide="mountain" class="h-5 w-5"></i>
+                </div>
+                <div class="footer-text transition-opacity duration-200 overflow-hidden">
+                    <p class="text-sm font-bold text-white whitespace-nowrap">Sierra Merendón</p>
+                    <p class="text-[10px] text-stone-500 uppercase tracking-wider whitespace-nowrap">Honduras, C.A.</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay para móvil -->
+    <div id="overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-stone-900/80 z-40 hidden md:hidden backdrop-blur-md transition-opacity"></div>
+
+    <!-- 2. CONTENIDO PRINCIPAL -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative w-full bg-[#f8fafc]">
+        
+        <!-- Botón flotante para menú móvil -->
+        <button onclick="toggleMobileMenu()" class="md:hidden absolute top-6 left-6 z-40 p-3 bg-white/80 backdrop-blur-md text-stone-600 hover:bg-white rounded-full shadow-lg border border-stone-200 transition-all hover:scale-105 active:scale-95">
+            <i data-lucide="menu" class="h-6 w-6"></i>
+        </button>
+
+        <!-- Área de Contenido Scrollable -->
+        <main class="flex-1 overflow-y-auto scroll-smooth">
+            
+            <!-- Contenedor Centrado Verticalmente -->
+            <div class="min-h-full flex flex-col justify-center py-16 px-4 md:px-12 animate-fade-in relative">
+                
+                <!-- Fondo Decorativo Sutil -->
+                <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-40">
+                    <div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-emerald-100/50 rounded-full blur-[100px]"></div>
+                    <div class="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-blue-100/40 rounded-full blur-[80px]"></div>
+                </div>
+
+                <!-- Header de Bienvenida -->
+                <div class="text-center mb-16 max-w-4xl mx-auto space-y-4 relative z-10">
+                    
+                    <!-- Título Principal -->
+                    <h1 class="text-3xl md:text-5xl font-bold text-stone-900 tracking-tight leading-tight relative z-20">
+                        Explora el Corazón del <br/>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500">Merendón</span>
+                    </h1>
+
+                    <!-- Mascota Cusquito (Interactiva con Audio) -->
+                    <div class="flex justify-center -mt-8 relative z-10">
+                        <img src="https://www.dropbox.com/scl/fi/njwz6enhkgn6bf26qi4pz/Dise-o_sin_t-tulo_V2.gif?rlkey=4w45c9c9dpi4i1j7jvi08geu8&st=ypparvdj&raw=1" 
+                             alt="Cusquito" 
+                             onclick="playCusquitoAudio()"
+                             class="h-[20rem] w-auto object-contain drop-shadow-xl hover:scale-105 transition-transform duration-500 cursor-pointer active:scale-95"
+                             title="¡Hola, soy Cusquito! Haz clic para escucharme">
+                    </div>
+                </div>
+
+                <!-- Grid de Tarjetas Interactivas -->
+                <div class="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto w-full relative z-10">
+                    
+                    <!-- Target 1: Guía Turística -->
+                    <a href="exploracion.html" class="group relative bg-white rounded-[2.5rem] p-8 md:p-10 shadow-[0_2px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgb(16,185,129,0.15)] transition-all duration-500 ease-out border border-stone-100 overflow-hidden hover:-translate-y-2 flex flex-col h-[420px]">
+                        <div class="absolute inset-0 bg-gradient-to-br from-emerald-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <!-- Icono de Fondo -->
+                        <div class="absolute -right-16 -top-16 text-emerald-50 group-hover:text-emerald-100/60 transition-colors duration-500 group-hover:rotate-12 transform origin-center">
+                            <i data-lucide="signpost-big" class="w-72 h-72 transition-transform duration-700 ease-in-out group-hover:scale-105"></i>
+                        </div>
+
+                        <div class="relative z-10 flex-1 flex flex-col justify-between">
+                            <div>
+                                <!-- Icono Principal -->
+                                <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-500 shadow-sm group-hover:shadow-lg group-hover:shadow-emerald-200">
+                                    <i data-lucide="signpost" class="w-8 h-8"></i>
+                                </div>
+                                
+                                <h3 class="text-3xl font-bold text-stone-800 mb-3 group-hover:text-emerald-700 transition-colors">Guía Turística</h3>
+                                <p class="text-stone-500 font-medium leading-relaxed group-hover:text-stone-600 transition-colors text-sm">
+                                    Historia • Actividades Turísticas • Observaciones • Perfil de Turistas • Mapa Interactivo
+                                </p>
+                            </div>
+
+                            <div class="flex items-center text-emerald-600 font-bold tracking-wide group-hover:translate-x-2 transition-transform duration-300 mt-8">
+                                <span class="mr-3 text-sm uppercase">Ver detalles</span>
+                                <div class="p-1.5 rounded-full bg-emerald-50 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Target 2: Campaña -->
+                    <a href="campana.html" class="group relative bg-white rounded-[2.5rem] p-8 md:p-10 shadow-[0_2px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgb(249,115,22,0.15)] transition-all duration-500 ease-out border border-stone-100 overflow-hidden hover:-translate-y-2 flex flex-col h-[420px]">
+                        <div class="absolute inset-0 bg-gradient-to-br from-orange-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <!-- Icono de Fondo -->
+                        <div class="absolute -right-16 -top-16 text-orange-50 group-hover:text-orange-100/60 transition-colors duration-500 group-hover:-rotate-12 transform origin-center">
+                            <i data-lucide="megaphone" class="w-72 h-72 transition-transform duration-700 ease-in-out group-hover:scale-105"></i>
+                        </div>
+
+                        <div class="relative z-10 flex-1 flex flex-col justify-between">
+                            <div>
+                                <!-- Icono Principal -->
+                                <div class="w-16 h-16 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-orange-500 group-hover:text-white transition-all duration-500 shadow-sm group-hover:shadow-lg group-hover:shadow-orange-200">
+                                    <i data-lucide="heart-handshake" class="w-8 h-8"></i>
+                                </div>
+                                
+                                <h3 class="text-3xl font-bold text-stone-800 mb-3 group-hover:text-orange-600 transition-colors">Campaña</h3>
+                                <p class="text-stone-500 font-medium leading-relaxed group-hover:text-stone-600 transition-colors">
+                                    Iniciativas de conservación, voluntariado y protección activa.
+                                </p>
+                            </div>
+
+                            <div class="flex items-center text-orange-500 font-bold tracking-wide group-hover:translate-x-2 transition-transform duration-300 mt-8">
+                                <span class="mr-3 text-sm uppercase">Ver campaña</span>
+                                <div class="p-1.5 rounded-full bg-orange-50 group-hover:bg-orange-500 group-hover:text-white transition-colors">
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Target 3: Recursos y Galería -->
+                    <a href="recurso.html" class="group relative bg-white rounded-[2.5rem] p-8 md:p-10 shadow-[0_2px_20px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_50px_rgb(59,130,246,0.15)] transition-all duration-500 ease-out border border-stone-100 overflow-hidden hover:-translate-y-2 flex flex-col h-[420px]">
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        
+                        <!-- Icono de Fondo -->
+                        <div class="absolute -right-16 -top-16 text-blue-50 group-hover:text-blue-100/60 transition-colors duration-500 group-hover:rotate-6 transform origin-center">
+                            <i data-lucide="images" class="w-72 h-72 transition-transform duration-700 ease-in-out group-hover:scale-105"></i>
+                        </div>
+
+                        <div class="relative z-10 flex-1 flex flex-col justify-between">
+                            <div>
+                                <!-- Icono Principal -->
+                                <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500 shadow-sm group-hover:shadow-lg group-hover:shadow-blue-200">
+                                    <i data-lucide="folder-open" class="w-8 h-8"></i>
+                                </div>
+                                
+                                <h3 class="text-3xl font-bold text-stone-800 mb-3 group-hover:text-blue-600 transition-colors">Recursos del Proyecto</h3>
+                                <p class="text-stone-500 font-medium leading-relaxed group-hover:text-stone-600 transition-colors text-sm">
+                                    Informe del Trabajo en Grupo • Galería Multimedia
+                                </p>
+                            </div>
+
+                            <div class="flex items-center text-blue-500 font-bold tracking-wide group-hover:translate-x-2 transition-transform duration-300 mt-8">
+                                <span class="mr-3 text-sm uppercase">Ver galería</span>
+                                <div class="p-1.5 rounded-full bg-blue-50 group-hover:bg-blue-500 group-hover:text-white transition-colors">
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Script Lógica -->
+    <script>
+        lucide.createIcons();
+
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const toggleIcon = document.getElementById('toggle-icon');
+
+        // Función para contraer/expandir sidebar
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+            
+            // Rotar icono
+            if (sidebar.classList.contains('collapsed')) {
+                toggleIcon.classList.add('rotate-180');
+            } else {
+                toggleIcon.classList.remove('rotate-180');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const isClosed = sidebar.classList.contains('-translate-x-full');
+            if (isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                closeMobileMenu();
+            }
+        }
+
+        function closeMobileMenu() {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        }
+
+        // Función para reproducir el audio de Cusquito
+        function playCusquitoAudio() {
+            const audioUrl = "https://www.dropbox.com/scl/fi/r0clqvlthjsfhl9hobbuu/INICIO-HOME.MP3?rlkey=fwi7yz6p4eqrtht8pqc6bwy72&st=3q3nw3d0&raw=1";
+            const audio = new Audio(audioUrl);
+            audio.volume = 0.8;
+            audio.play().catch(error => console.log("Error al reproducir audio:", error));
+        }
+    </script>
+</body>
+</html>
