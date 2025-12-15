@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaña - Protejamos nuestro Merendón</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Configuración personalizada -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        // Fuente principal cambiada a Inter para mejor legibilidad en UI
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b' },
+                        stone: { 50: '#fafaf9', 100: '#f5f5f4', 800: '#292524', 900: '#1c1917' },
+                        sky: { 500: '#0ea5e9' },
+                        orange: { 500: '#f97316' },
+                        amber: { 500: '#f59e0b' },
+                        cyan: { 500: '#06b6d4' }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Importación de la fuente Inter para mejor UI */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Estilos base del Sidebar */
+        #sidebar.collapsed { width: 5rem; }
+        #sidebar.collapsed .hide-on-collapse { display: none; opacity: 0; pointer-events: none; }
+        #sidebar.collapsed .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        #sidebar.collapsed .nav-icon { margin-right: 0; }
+        #sidebar.collapsed .logo-container { padding-left: 0; padding-right: 0; justify-content: center; }
+        #sidebar.collapsed .logo-icon { margin-right: 0; height: 3rem; width: auto; }
+        
+        .active-link { 
+            background: linear-gradient(90deg, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0) 100%);
+            color: #34d399; /* emerald-400 */
+            border-left: 3px solid #10b981;
+        }
+
+        /* Ocultar scrollbar */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Estilo para las tarjetas de estrategias y impacto (Interactividad) */
+        .interactive-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .interactive-card:hover {
+            transform: translateY(-8px) scale(1.01); /* Elevación y ligera escala */
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Acordeón Header */
+        .accordion-header {
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+        .accordion-header:hover {
+            background-color: #f5f5f4; /* stone-100 */
+        }
+        .accordion-content {
+            background-color: #fafaf9; /* stone-50 */
+            border-top: 1px solid #e7e5e4; /* stone-200 */
+            padding-left: 2rem;
+            padding-right: 2rem;
+            padding-bottom: 2rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+        }
+        .accordion-content.active {
+            max-height: 500px; /* Suficiente altura para el contenido */
+            padding-top: 1rem;
+            padding-bottom: 1.5rem;
+        }
+        .accordion-icon.rotate {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-[#f8fafc] text-stone-800 h-screen overflow-hidden flex selection:bg-emerald-200">
+
+    <!-- 1. SIDEBAR (Conexiones de Navegación) -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-[#1c1917] text-stone-300 transform -translate-x-full transition-all duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col shadow-2xl border-r border-stone-800">
+        <button onclick="toggleSidebar()" class="hidden md:flex absolute -right-3 top-24 bg-emerald-600 text-white p-1 rounded-full shadow-lg hover:bg-emerald-500 transition-colors z-50 border border-emerald-700 hover:scale-110">
+            <i data-lucide="chevron-left" id="toggle-icon" class="h-4 w-4 transition-transform duration-300"></i>
+        </button>
+
+        <div class="h-32 flex items-center px-6 border-b border-stone-800/50 logo-container transition-all">
+            <div class="relative flex items-center justify-center shrink-0">
+                <div class="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full animate-pulse-slow"></div>
+                <!-- Mascota Cusquito -->
+                <img src="https://www.dropbox.com/scl/fi/njwz6enhkgn6bf26qi4pz/Dise-o_sin_t-tulo_V2.gif?rlkey=4w45c9c9dpi4i1j7jvi08geu8&st=ypparvdj&raw=1" 
+                     alt="Cusquito Mascota" 
+                     onclick="playCusquitoAudio()"
+                     class="relative h-20 w-auto object-contain mr-3 logo-icon transition-all hover:scale-110 cursor-pointer active:scale-95"
+                     title="¡Haz clic para escucharme!">
+            </div>
+            <div class="hide-on-collapse transition-opacity duration-200">
+                <h1 class="font-bold text-lg leading-tight tracking-wide text-white">EL CUSUCO</h1>
+                <p class="text-[10px] text-emerald-500 font-bold tracking-[0.2em] uppercase">Parque Nacional</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 py-8 space-y-2 px-3 overflow-y-auto scrollbar-hide">
+            <a href="index.html" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl hover:bg-white/5 text-stone-400 hover:text-white transition-all group">
+                <i data-lucide="layout-grid" class="h-5 w-5 mr-3 nav-icon group-hover:text-emerald-400 transition-colors"></i>
+                <span class="font-medium hide-on-collapse whitespace-nowrap">Inicio</span>
+            </a>
+            
+            <div class="hide-on-collapse px-4 pb-3 text-[10px] font-bold text-stone-600 uppercase tracking-widest transition-opacity duration-200">Explorar</div>
+            
+            <a href="exploracion.html" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl text-stone-400 hover:bg-white/5 hover:text-white transition-all group">
+                <i data-lucide="compass" class="h-5 w-5 mr-3 nav-icon group-hover:text-emerald-400 transition-colors"></i>
+                <span class="font-medium hide-on-collapse whitespace-nowrap">Exploración</span>
+            </a>
+            <!-- Enlace Activo para esta página -->
+            <a href="campana.html" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl text-white active-link transition-all group">
+                <i data-lucide="megaphone" class="h-5 w-5 mr-3 nav-icon text-emerald-400 transition-colors"></i>
+                <span class="font-medium hide-on-collapse whitespace-nowrap">Campaña</span>
+            </a>
+            <a href="recursos.html" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl text-stone-400 hover:bg-white/5 hover:text-white transition-all group">
+                <i data-lucide="book-open" class="h-5 w-5 mr-3 nav-icon group-hover:text-emerald-400 transition-colors"></i>
+                <span class="font-medium hide-on-collapse whitespace-nowrap">Recurso</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay Móvil -->
+    <div id="overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-stone-900/80 z-40 hidden md:hidden backdrop-blur-md transition-opacity"></div>
+
+    <!-- 2. CONTENIDO PRINCIPAL -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden relative w-full bg-[#f8fafc]">
+        
+        <button onclick="toggleMobileMenu()" class="md:hidden absolute top-6 left-6 z-40 p-3 bg-white/80 backdrop-blur-md text-stone-600 hover:bg-white rounded-full shadow-lg border border-stone-200 transition-all hover:scale-110 z-50">
+            <i data-lucide="menu" class="h-6 w-6"></i>
+        </button>
+
+        <!-- Barra Superior (Ahora sin Cusquito) -->
+        <div class="bg-white/80 backdrop-blur-md border-b border-stone-200 sticky top-0 z-30 shadow-sm">
+            <div class="relative flex items-center overflow-x-auto scrollbar-hide py-3 px-4 md:px-8 gap-3">
+                <h2 class="text-xl font-bold text-emerald-700">Campaña de Ecoturismo</h2>
+            </div>
+        </div>
+
+        <main class="flex-1 overflow-y-auto scroll-smooth p-6 md:p-10 bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0]">
+
+            <!-- Contenedor de Campaña -->
+            <div class="max-w-6xl mx-auto space-y-12 animate-fade-in-up">
+                
+                <!-- SECCIÓN 1: TÍTULO Y OBJETIVO -->
+                <div class="text-center max-w-4xl mx-auto space-y-4">
+                    <span class="text-sm font-bold text-emerald-600 uppercase tracking-[0.2em]">Campaña de Conciencia Turística y Marketing</span>
+                    <h1 class="text-5xl md:text-6xl font-extrabold text-stone-900 leading-tight">
+                        “Protejamos nuestro <span class="text-sky-500">Merendón</span>”
+                    </h1>
+                    <div class="flex items-center justify-center gap-3 text-lg text-stone-700 pt-4">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-emerald-600"></i>
+                        <p class="max-w-2xl">
+                            <span class="font-bold">Objetivo:</span> Promover la conservación del Parque Nacional El Cusuco a través de la educación y la participación de todos.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: MASCOTA EMBAJADORA (CUSQUITO) -->
+                <div class="bg-primary-100 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 shadow-inner border border-primary-50">
+                    <div class="relative w-28 h-28 shrink-0" onclick="playInicioAudio()" style="cursor: pointer;">
+                         <!-- Imagen de la Mascota -->
+                        <img src="https://www.dropbox.com/scl/fi/njwz6enhkgn6bf26qi4pz/Dise-o_sin_t-tulo_V2.gif?rlkey=4w45c9c9dpi4i1j7jvi08geu8&st=ypparvdj&raw=1" 
+                            alt="Cusquito Mascota" 
+                            class="w-full h-full object-contain animate-float"
+                        >
+                    </div>
+                    <div class="flex-1">
+                        <span class="bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Embajador Oficial</span>
+                        <h3 class="text-3xl font-bold text-primary-900 mt-2">Cusquito: La Voz de la Montaña</h3>
+                        <p class="text-primary-700 mt-2">Cusquito es el portavoz de la campaña, un personaje amigable y educativo que busca conectar emocionalmente contigo para impulsar la acción y la conciencia en todos los medios.</p>
+                    </div>
+                </div>
+                
+                <!-- SECCIÓN 3: ESTRATEGIAS EXPANDIDAS (Acordeón Interactivo) -->
+                <div>
+                    <h2 class="text-3xl font-bold text-stone-800 mb-6 flex items-center gap-3">
+                        <i data-lucide="zap" class="w-7 h-7 text-sky-500"></i> Estrategias de Activación y Marketing
+                    </h2>
+                    
+                    <div class="space-y-4">
+                        
+                        <!-- ESTRATEGIA 1: MEDIOS DIGITALES Y CONVENCIONALES -->
+                        <div class="bg-white rounded-3xl shadow-lg border-l-4 border-sky-500 overflow-hidden interactive-card">
+                            <button class="accordion-header w-full text-left p-6 flex justify-between items-center" onclick="toggleAccordion('content-1', 'icon-1')">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center shrink-0"><i data-lucide="monitor-dot" class="w-6 h-6"></i></div>
+                                    <h4 class="font-bold text-xl text-stone-800">1. Campaña Multimedia (Digital & ATL)</h4>
+                                </div>
+                                <i data-lucide="chevron-down" id="icon-1" class="accordion-icon w-5 h-5 text-stone-500 transition-transform duration-300"></i>
+                            </button>
+                            <div id="content-1" class="accordion-content">
+                                <p class="text-sm font-bold text-stone-700 mb-3">Técnicas aplicadas: Content Marketing, SEO/SEM Geográfico, Publicidad ATL y Experiencia Visual.</p>
+                                <ul class="list-disc list-inside space-y-2 text-sm text-stone-600 pl-4">
+                                    <li>Medios Digitales y Social Media: Usaremos publicaciones vibrantes para mostrar la belleza del Merendón. Empleamos hashtags temáticos (#ProtejamosMerendón, #EcoturismoHonduras) para alcanzar a más personas (SEO/SEM).</li>
+                                    <li>Contenido de Conciencia: Crearemos videos cortos y educativos con Cusquito sobre cómo manejar los residuos y prevenir la tala e incendios (Marketing de Contenido).</li>
+                                    <li>Medios Convencionales (ATL): Colocaremos vallas publicitarias en San Pedro Sula y distribuiremos folletos con mensajes clave para atraer a nuevos visitantes.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- ESTRATEGIA 2: ALIANZAS ESTRATÉGICAS (Marketing) -->
+                        <div class="bg-white rounded-3xl shadow-lg border-l-4 border-emerald-500 overflow-hidden interactive-card">
+                            <button class="accordion-header w-full text-left p-6 flex justify-between items-center" onclick="toggleAccordion('content-2', 'icon-2')">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shrink-0"><i data-lucide="handshake" class="w-6 h-6"></i></div>
+                                    <h4 class="font-bold text-xl text-stone-800">2. Alianzas Estratégicas y RSE</h4>
+                                </div>
+                                <i data-lucide="chevron-down" id="icon-2" class="accordion-icon w-5 h-5 text-stone-500 transition-transform duration-300"></i>
+                            </button>
+                            <div id="content-2" class="accordion-content">
+                                <p class="text-sm font-bold text-stone-700 mb-3">Técnicas aplicadas: Partnership Marketing, Marketing de Responsabilidad Social Corporativa (RSE) y Co-Branding.</p>
+                                <ul class="list-disc list-inside space-y-2 text-sm text-stone-600 pl-4">
+                                    <li>Universidades (RSE & Trabajo Social): Firmaremos acuerdos con instituciones (incluyendo UCRISH internacional) para que la reforestación y limpieza sean parte del trabajo social de los estudiantes. ¡Aseguramos compromiso joven!</li>
+                                    <li>Alianzas con Locales/Productores: Crearemos un programa de "Moneda Verde": si participas en una jornada de limpieza, obtienes descuentos con los productores de café y servicios locales.</li>
+                                    <li>Patrocinio Internacional: Buscaremos apoyo de marcas globales de turismo o ONGs para conseguir financiamiento y difundir la campaña a nivel mundial.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- ESTRATEGIA 3: ACTIVACIÓN Y EDUCACIÓN EN SITIO -->
+                        <div class="bg-white rounded-3xl shadow-lg border-l-4 border-orange-500 overflow-hidden interactive-card">
+                            <button class="accordion-header w-full text-left p-6 flex justify-between items-center" onclick="toggleAccordion('content-3', 'icon-3')">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center shrink-0"><i data-lucide="book-open-text" class="w-6 h-6"></i></div>
+                                    <h4 class="font-bold text-xl text-stone-800">3. Activación y Educación en Sitio</h4>
+                                </div>
+                                <i data-lucide="chevron-down" id="icon-3" class="accordion-icon w-5 h-5 text-stone-500 transition-transform duration-300"></i>
+                            </button>
+                            <div id="content-3" class="accordion-content">
+                                <p class="text-sm font-bold text-stone-700 mb-3">Técnicas aplicadas: Marketing Experiencial y Concientización Directa (BTL).</p>
+                                <ul class="list-disc list-inside space-y-2 text-sm text-stone-600 pl-4">
+                                    <li>Guías como Embajadores: Nuestros guías locales te darán charlas breves (5 min) antes de empezar, para que sepas por qué y cómo proteger la biodiversidad de Merendón.</li>
+                                    <li>Puntos Interactivos: Instalaremos señalización con códigos QR en los senderos. Escanéalos para ver videos de Cusquito con tips de conservación.</li>
+                                    <li>Jornadas de Limpieza: Transformaremos la limpieza y reforestación en experiencias de "eco-aventura" divertidas para que todos quieran participar (Marketing Experiencial).</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                         <!-- ESTRATEGIA 4: INFRAESTRUCTURA VERDE -->
+                        <div class="bg-white rounded-3xl shadow-lg border-l-4 border-purple-500 overflow-hidden interactive-card">
+                            <button class="accordion-header w-full text-left p-6 flex justify-between items-center" onclick="toggleAccordion('content-4', 'icon-4')">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center shrink-0"><i data-lucide="layout-grid" class="w-6 h-6"></i></div>
+                                    <h4 class="font-bold text-xl text-stone-800">4. Infraestructura Verde (Desarrollo Sostenible)</h4>
+                                </div>
+                                <i data-lucide="chevron-down" id="icon-4" class="accordion-icon w-5 h-5 text-stone-500 transition-transform duration-300"></i>
+                            </button>
+                            <div id="content-4" class="accordion-content">
+                                <p class="text-sm font-bold text-stone-700 mb-3">Foco: Mejorar la experiencia y el acceso sin afectar el ecosistema.</p>
+                                <ul class="list-disc list-inside space-y-2 text-sm text-stone-600 pl-4">
+                                    <li>Mejora de Caminos: Invertiremos en el mantenimiento de las vías de acceso con materiales permeables para evitar la erosión. Queremos caminos seguros sin dañar el suelo. ¡No a la pavimentación masiva!</li>
+                                    <li>Señalización Ecológica: Tendremos señalización clara, duradera y hecha con materiales reciclados.</li>
+                                    <li>Estructuras de Bajo Impacto: Los miradores y áreas de descanso serán plataformas elevadas para proteger la flora, permitiendo que el agua fluya libremente, como lo requiere el ecosistema.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SECCIÓN 5: CONSERVACIÓN Y ECOSISTEMA -->
+                <div class="pt-8">
+                    <h2 class="text-3xl font-bold text-stone-800 mb-8 flex items-center gap-3">
+                        <i data-lucide="leaf" class="w-7 h-7 text-primary-700"></i> Conservación: Biodiversidad y Ecosistema
+                    </h2>
+
+                    <div class="grid md:grid-cols-2 gap-8">
+                         <!-- Columna 1: Biodiversidad -->
+                        <div class="bg-white p-8 rounded-3xl shadow-xl border-t-4 border-cyan-500 interactive-card">
+                            <i data-lucide="sprout" class="w-8 h-8 text-cyan-600 mb-3"></i>
+                            <h3 class="text-2xl font-bold text-stone-800 mb-2">Nuestro Bosque Nublado Único</h3>
+                            <p class="text-stone-600 leading-relaxed text-sm">
+                                El Cusuco es más que un parque; es una <strong>fábrica natural de agua</strong> para San Pedro Sula. Su bosque nublado captura la niebla y alimenta nuestros acuíferos. Protegerlo es vital para el suministro de agua y para la supervivencia de especies únicas.
+                            </p>
+                            <ul class="list-disc list-inside space-y-1 text-xs text-stone-500 pl-2 mt-3">
+                                <li>Hogar del Quetzal y anfibios endémicos.</li>
+                                <li>Regulador del clima regional esencial.</li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Columna 2: Infraestructura y Agua -->
+                        <div class="bg-white p-8 rounded-3xl shadow-xl border-t-4 border-blue-500 interactive-card">
+                            <i data-lucide="droplets" class="w-8 h-8 text-blue-600 mb-3"></i>
+                            <h3 class="text-2xl font-bold text-stone-800 mb-2">Cuidado del Suelo y el Agua</h3>
+                            <p class="text-stone-600 leading-relaxed text-sm">
+                                La infraestructura que usemos debe ser <strong>de bajo impacto</strong>. El suelo orgánico del bosque es un filtro natural. Si lo dañamos, afectamos los ciclos hídricos. Por eso, priorizamos senderos sostenibles y estructuras que no interrumpan el flujo natural del agua.
+                            </p>
+                            <ul class="list-disc list-inside space-y-1 text-xs text-stone-500 pl-2 mt-3">
+                                <li>Prioridad al mantenimiento de caminos permeables.</li>
+                                <li>Protección del suelo contra la erosión.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 6: TURISMO Y DESARROLLO COMUNITARIO -->
+                <div class="pt-8">
+                    <h2 class="text-3xl font-bold text-stone-800 mb-8 flex items-center gap-3">
+                        <i data-lucide="dollar-sign" class="w-7 h-7 text-amber-500"></i> Turismo: Motor Económico de San Pedro Sula
+                    </h2>
+
+                    <div class="bg-white p-8 rounded-3xl shadow-xl border-l-4 border-amber-500 space-y-6">
+                        <div class="flex items-center gap-4">
+                            <i data-lucide="trending-up" class="w-8 h-8 text-amber-500 shrink-0"></i>
+                            <h3 class="text-2xl font-bold text-stone-800">Fortalecimiento Económico Local</h3>
+                        </div>
+                        <p class="text-stone-600 leading-relaxed">
+                            El ecoturismo responsable es una fuente vital de ingresos que transforma la economía local y ayuda a las comunidades cercanas a combatir la pobreza. ¡Conservar el Merendón significa asegurar nuestro futuro económico!
+                        </p>
+
+                        <h4 class="text-xl font-bold text-stone-800 mt-6 flex items-center gap-2">
+                             <i data-lucide="users" class="w-5 h-5 text-emerald-600"></i> Estrategias de Aprovechamiento Comunitario:
+                        </h4>
+                        <ul class="list-disc list-inside space-y-3 text-sm text-stone-600 pl-4">
+                            <li>Empoderamiento de Guías Locales: Certificaremos a los residentes como guías turísticos, asegurando que el dinero que gastas en el tour se quede directamente en la comunidad.</li>
+                            <li>Cadenas de Valor Cortas: Impulsaremos la venta directa de café, artesanías y alimentos por parte de las familias, dándoles mayores ganancias sin intermediarios.</li>
+                            <li>Alojamiento Comunitario (Homestays): Capacitaremos a las familias para que ofrezcan alojamiento sencillo y auténtico, diversificando su economía y brindándote una experiencia real.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 7: IMPACTO ESPERADO (KPIs) -->
+                <div class="pt-8">
+                    <h2 class="text-3xl font-bold text-stone-800 mb-8 flex items-center gap-3">
+                        <i data-lucide="target" class="w-7 h-7 text-emerald-600"></i> Medición de Impacto Global
+                    </h2>
+                    
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        
+                        <!-- KPI 1: Residuos -->
+                        <div class="interactive-card bg-white p-6 rounded-2xl shadow-md border-b-4 border-emerald-500">
+                            <i data-lucide="trash-2" class="w-8 h-8 text-red-500 mb-3"></i>
+                            <h4 class="font-extrabold text-xl text-stone-800">Residuos Cero</h4>
+                            <p class="text-xs uppercase font-bold text-stone-500">Medición de Recolección</p>
+                            <p class="text-sm text-stone-600 mt-2">Reducción del 80% de desechos no orgánicos encontrados en senderos, logrando un impacto visible inmediato.</p>
+                        </div>
+
+                        <!-- KPI 2: Reforestación y Tala -->
+                        <div class="interactive-card bg-white p-6 rounded-2xl shadow-md border-b-4 border-emerald-500">
+                            <i data-lucide="tree-deciduous" class="w-8 h-8 text-primary-700 mb-3"></i>
+                            <h4 class="font-extrabold text-xl text-stone-800">Compromiso Forestal</h4>
+                            <p class="text-xs uppercase font-bold text-stone-500">Reforestación y Prevención</p>
+                            <p class="text-sm text-stone-600 mt-2">Aumento sostenido en la reforestación gracias al apoyo académico y erradicación total de la tala ilegal en la zona núcleo.</p>
+                        </div>
+                        
+                        <!-- KPI 3: Crecimiento Económico -->
+                         <div class="interactive-card bg-white p-6 rounded-2xl shadow-md border-b-4 border-amber-500">
+                            <i data-lucide="wallet" class="w-8 h-8 text-amber-500 mb-3"></i>
+                            <h4 class="font-extrabold text-xl text-stone-800">Crecimiento Local</h4>
+                            <p class="text-xs uppercase font-bold text-stone-500">Impacto en la Comunidad</p>
+                            <p class="text-sm text-stone-600 mt-2">Incremento del 25% en los ingresos promedio de las familias locales involucradas en servicios turísticos directos.</p>
+                        </div>
+
+                        <!-- KPI 4: Posicionamiento -->
+                        <div class="interactive-card bg-white p-6 rounded-2xl shadow-md border-b-4 border-emerald-500">
+                            <i data-lucide="map-pin" class="w-8 h-8 text-sky-500 mb-3"></i>
+                            <h4 class="font-extrabold text-xl text-stone-800">Destino Sostenible</h4>
+                            <p class="text-xs uppercase font-bold text-stone-500">Ecoturismo Responsable</p>
+                            <p class="text-sm text-stone-600 mt-2">Posicionamiento en top 5 de destinos de ecoturismo responsable en Centroamérica, según plataformas globales de turismo.</p>
+                        </div>
+
+                    </div>
+                </div>
+                
+                <!-- SECCIÓN 8: CUSQUITO VIRAL (Lemas para Redes Sociales) -->
+                <div class="bg-stone-800 rounded-3xl p-8 md:p-12 text-white relative overflow-hidden">
+                    <div class="absolute top-0 left-0 p-8 opacity-10"><i data-lucide="message-square" class="w-32 h-32 text-stone-600"></i></div>
+
+                    <h2 class="text-3xl font-bold text-emerald-400 mb-6 flex items-center gap-3">
+                        <i data-lucide="instagram" class="w-7 h-7"></i> #CusquitoViral: Slogans y Activación Digital
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-6 text-sm">
+                        
+                        <!-- Lema 1 -->
+                        <div class="bg-stone-900/50 p-4 rounded-xl border border-stone-700 hover:border-emerald-500 transition-colors">
+                            <p class="font-extrabold text-xl mb-1">"Mi Merendón, Mi Responsabilidad."</p>
+                            <p class="text-stone-400">#EcoturismoResponsable #CusucoLimpio</p>
+                        </div>
+
+                        <!-- Lema 2 -->
+                        <div class="bg-stone-900/50 p-4 rounded-xl border border-stone-700 hover:border-emerald-500 transition-colors">
+                            <p class="font-extrabold text-xl mb-1">"Una Montaña Limpia es un Merendón Vivo."</p>
+                            <p class="text-stone-400">#MerendónExperience #NoDejesRastros</p>
+                        </div>
+
+                        <!-- Lema 3 -->
+                        <div class="bg-stone-900/50 p-4 rounded-xl border border-stone-700 hover:border-emerald-500 transition-colors">
+                            <p class="font-extrabold text-xl mb-1">"Sigue mis Pasos, Protege el Bosque."</p>
+                            <p class="text-stone-400">#TrabajoSocialAmbiental #CusquitoTips</p>
+                        </div>
+
+                        <!-- Lema 4 -->
+                        <div class="bg-stone-900/50 p-4 rounded-xl border border-stone-700 hover:border-emerald-500 transition-colors">
+                            <p class="font-extrabold text-xl mb-1">"Menos Tala, Más Reforestación. ¡Únete!"</p>
+                            <p class="text-stone-400">#AlianzaVerde #MerendónChallenge</p>
+                        </div>
+                        
+                        <!-- Información adicional de la Mascota -->
+                        <div class="md:col-span-2 mt-4 text-center border-t border-stone-700 pt-4">
+                            <p class="text-stone-400 text-xs italic">Cusquito aparecerá en todos los puntos de contacto digital y físico para simplificar el mensaje de conservación a la audiencia general.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SECCIÓN 9: LLAMADA FINAL DE CUSQUITO (FINAL) -->
+                <div class="pt-8">
+                     <h2 class="text-3xl font-bold text-stone-800 mb-8 flex items-center gap-3">
+                        <i data-lucide="paw-print" class="w-7 h-7 text-primary-700"></i> ¡Última Llamada a la Acción!
+                    </h2>
+                    <div class="bg-gradient-to-r from-primary-600 to-emerald-800 rounded-3xl p-8 md:p-12 flex flex-col lg:flex-row items-center justify-between gap-10 shadow-2xl interactive-card">
+                        <div class="lg:w-1/4 relative flex justify-center shrink-0 order-first lg:order-last">
+                            <!-- Mascota Grande (w-72) -->
+                            <img src="https://www.dropbox.com/scl/fi/njwz6enhkgn6bf26qi4pz/Dise-o_sin_t-tulo_V2.gif?rlkey=4w45c9c9dpi4i1j7jvi08geu8&st=ypparvdj&raw=1" 
+                                alt="Cusquito Héroe Final" 
+                                class="w-72 h-auto object-contain animate-float transition-transform duration-500 hover:scale-110 cursor-pointer"
+                                onclick="playFinalAudio()"
+                            >
+                        </div>
+                         <div class="lg:w-2/3 text-white text-center lg:text-left space-y-3 order-last lg:order-first">
+                            <span class="text-xs font-bold uppercase tracking-widest bg-white/20 px-3 py-1 rounded-full">Sé el Guardián del Merendón</span>
+                            <h3 class="text-4xl font-extrabold leading-tight">
+                                ¡Tu Aventura Comienza con Responsabilidad!
+                            </h3>
+                            <p class="text-emerald-100">
+                                Únete a la comunidad que protege el Merendón. Cada visita, cada foto, cada acción cuenta. ¡Llevemos el mensaje de Cusquito a todo el mundo!
+                            </p>
+                            
+                            <a href="#section-1" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-full shadow-sm text-primary-800 bg-white hover:bg-primary-50 transition-colors">
+                                <i data-lucide="chevron-up-square" class="w-5 h-5 mr-2"></i> Volver Arriba
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            
+            <!-- Pie de Página -->
+            <footer class="mt-12 pb-2 text-center border-t border-stone-200 pt-8">
+                <p class="text-[10px] text-stone-400 font-bold uppercase tracking-widest">Sierra del Merendón</p>
+                <p class="text-[9px] text-stone-400">© 2025 Parque Nacional El Cusuco</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        lucide.createIcons();
+
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const toggleIcon = document.getElementById('toggle-icon');
+        
+        // Audio de inicio de la campaña (Sección 2)
+        function playInicioAudio() {
+            const audio = new Audio("https://www.dropbox.com/scl/fi/sem8zpf1h0i6j0yrclyaf/INICIO-CAMPA-A.MP3?rlkey=3kqxfrvdctko74xw47ltizgv5&raw=1");
+            audio.volume = 0.9;
+            audio.play().catch(e => console.log("Error al reproducir audio de inicio:", e));
+        }
+
+        // Audio final de la campaña (Sección 9)
+        function playFinalAudio() {
+            const audio = new Audio("https://www.dropbox.com/scl/fi/9ifk3xyn50loorwma2zcv/FINAL-CAMPA-A.MP3?rlkey=iy64p9jngoa04kkxbkpcr1h2b&raw=1");
+            audio.volume = 0.9;
+            audio.play().catch(e => console.log("Error al reproducir audio final:", e));
+        }
+        
+        // Audio principal del sidebar (si aplica)
+        function playCusquitoAudio() {
+            const audio = new Audio("https://www.dropbox.com/scl/fi/r0clqvlthjsfhl9hobbuu/INICIO-HOME.MP3?rlkey=fwi7yz6p4eqrtht8pqc6bwy72&st=3q3nw3d0&raw=1");
+            audio.volume = 0.8;
+            audio.play().catch(e => console.log("Error de audio:", e));
+        }
+
+        function toggleSidebar() { 
+            sidebar.classList.toggle('collapsed'); 
+            toggleIcon.classList.toggle('rotate-180'); 
+        }
+
+        function toggleMobileMenu() { 
+            const isClosed = sidebar.classList.contains('-translate-x-full'); 
+            if (isClosed) { 
+                sidebar.classList.remove('-translate-x-full'); 
+                overlay.classList.remove('hidden'); 
+            } else { 
+                closeMobileMenu(); 
+            } 
+        }
+
+        function closeMobileMenu() { 
+            sidebar.classList.add('-translate-x-full'); 
+            overlay.classList.add('hidden'); 
+        }
+        
+        // Función para el Acordeón
+        function toggleAccordion(contentId, iconId) {
+            const content = document.getElementById(contentId);
+            const icon = document.getElementById(iconId);
+
+            // Cierra todos los demás acordeones
+            document.querySelectorAll('.accordion-content').forEach(el => {
+                if (el.id !== contentId && el.classList.contains('active')) {
+                    el.classList.remove('active');
+                    el.style.maxHeight = null; // Resetear el max-height
+                    const relatedIcon = document.getElementById('icon-' + el.id.split('-')[1]);
+                    if (relatedIcon) relatedIcon.classList.remove('rotate');
+                }
+            });
+
+            // Toggle el acordeón seleccionado
+            content.classList.toggle('active');
+            icon.classList.toggle('rotate');
+
+            if (content.classList.contains('active')) {
+                // Calculamos y aplicamos la altura (necesario para la transición max-height)
+                content.style.maxHeight = content.scrollHeight + "px";
+            } else {
+                content.style.maxHeight = null;
+            }
+        }
+
+        window.addEventListener('load', () => {
+            lucide.createIcons();
+            // Cierra todos los acordeones al cargar la página
+            document.querySelectorAll('.accordion-content').forEach(el => {
+                el.classList.remove('active');
+                el.style.maxHeight = null;
+            });
+        });
+    </script>
+</body>
+</html>
