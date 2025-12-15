@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recurso - Parque Nacional El Cusuco</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Configuración personalizada -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: { 50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981', 600: '#059669', 700: '#047857', 900: '#064e3b' },
+                        stone: { 50: '#fafaf9', 100: '#f5f5f4', 800: '#292524', 900: '#1c1917' },
+                        // Añadido color azul para el botón de descarga
+                        blue: { 600: '#2563eb', 700: '#1d4ed8', 500: '#3b82f6' }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'slide-in': 'slideIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideIn: {
+                            '0%': { opacity: '0', transform: 'translateY(15px)' },
+                            '100%': { transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Montserrat', sans-serif; }
+        
+        /* Estilos base del Sidebar */
+        #sidebar.collapsed { width: 5rem; }
+        #sidebar.collapsed .hide-on-collapse { display: none; opacity: 0; pointer-events: none; }
+        #sidebar.collapsed .nav-item { justify-content: center; padding-left: 0; padding-right: 0; }
+        #sidebar.collapsed .nav-icon { margin-right: 0; }
+        #sidebar.collapsed .logo-container { padding-left: 0; padding-right: 0; justify-content: center; }
+        #sidebar.collapsed .logo-icon { margin-right: 0; height: 3rem; width: auto; }
+        
+        .active-link { 
+            background: linear-gradient(90deg, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0) 100%);
+            color: #34d399; /* emerald-400 */
+            border-left: 3px solid #10b981;
+        }
+
+        /* Ocultar scrollbar */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Estilos para Tabs */
+        .tab-btn { 
+            position: relative; 
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .tab-btn.active {
+            color: #059669; /* emerald-600 */
+            background-color: #f0fdf4; /* emerald-50 */
+        }
+        
+        /* Estilo para las tarjetas de participantes */
+        .participant-card {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+        }
+
+        .participant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        .participant-card:hover .participant-name {
+            color: #047857; /* emerald-700 */
+            transform: scale(1.05);
+        }
+        
+        /* Estilos de Icono de Participante Limpios */
+        .participant-icon {
+            font-size: 1.8rem; /* Tamaño para el emoji */
+            width: 40px; /* Mantener espacio para alineación */
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Estilo para el avatar de la Catedrática (Emoji) */
+        .teacher-avatar {
+            font-size: 1.5rem;
+            background-color: #dbeafe; /* blue-100 */
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Estilo para el Modal de PDF */
+        #pdfModal.flex, #mediaModal.flex {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #pdfModal, #mediaModal {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        /* --- ESTILOS DE GALERÍA DE ESTAMPILLA/MARCO --- */
+        .media-grid {
+            /* Cambio de 3 a 4 columnas en desktop y reducción del gap */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px; /* gap-4 */
+        }
+
+        .media-card {
+            /* Reducción del marco de 8px a 6px */
+            width: 100%;
+            cursor: pointer;
+            position: relative;
+            background-color: white; 
+            padding: 6px; /* Marco de la estampilla reducido */
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); 
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: auto; 
+        }
+
+        .media-card:hover {
+            transform: scale(1.03) translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Contenido interno (Imagen/Video) */
+        .media-content-wrapper {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            border-radius: 6px;
+            position: relative;
+        }
+        
+        .media-content-wrapper img, .media-content-wrapper video {
+             width: 100%;
+             height: auto; /* Ajuste crucial para que la altura se adapte a la imagen/video */
+             display: block;
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 9999px;
+            padding: 1rem;
+            color: white;
+            transition: background 0.3s ease;
+            z-index: 10;
+        }
+        .media-card:hover .play-icon {
+            background: rgba(5, 150, 105, 0.8); /* emerald-600 */
+        }
+
+        .file-tag {
+            position: absolute;
+            top: 6px; /* Ajuste al marco */
+            right: 6px;
+            background-color: #10b981; /* emerald-500 */
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-bottom-left-radius: 8px;
+            z-index: 10;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-[#f8fafc] text-stone-800 h-screen overflow-hidden flex selection:bg-emerald-200">
+
+    <!-- 1. SIDEBAR (Conexiones de Navegación) -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-72 bg-[#1c1917] text-stone-300 transform -translate-x-full transition-all duration-300 ease-in-out md:relative md:translate-x-0 flex flex-col shadow-2xl border-r border-stone-800">
+        <button onclick="toggleSidebar()" class="hidden md:flex absolute -right-3 top-24 bg-emerald-600 text-white p-1 rounded-full shadow-lg hover:bg-emerald-500 transition-colors z-50 border border-emerald-700 hover:scale-110">
+            <i data-lucide="chevron-left" id="toggle-icon" class="h-4 w-4 transition-transform duration-300"></i>
+        </button>
+
+        <div class="h-32 flex items-center px-6 border-b border-stone-800/50 logo-container transition-all">
+            <div class="relative flex items-center justify-center shrink-0">
+                <div class="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full animate-pulse-slow"></div>
+                <!-- Mascota Cusquito -->
+                <img src="https://www.dropbox.com/scl/fi/njwz6enhkgn6bf26qi4pz/Dise-o_sin_t-tulo_V2.gif?rlkey=4w45c9c9dpi4i1j7jvi08geu8&st=ypparvdj&raw=1" 
+                     alt="Logo Cusquito" 
+                     onclick="playCusquitoAudio()"
+                     class="relative h-20 w-auto object-contain mr-3 logo-icon transition-all hover:scale-110 cursor-pointer active:scale-95"
+                     title="¡Haz clic para escucharme!">
+            </div>
+            <div class="hide-on-collapse transition-opacity duration-200">
+                <h1 class="font-bold text-lg leading-tight tracking-wide text-white">EL CUSUCO</h1>
+                <p class="text-[10px] text-emerald-500 font-bold tracking-[0.2em] uppercase">Parque Nacional</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 py-8 space-y-2 px-3 overflow-y-auto scrollbar-hide">
+            <a href="index.html" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl hover:bg-white/5 text-stone-400 hover:text-white transition-all group">
+                <i data-lucide="layout-grid" class="h-5 w-5 mr-3 nav-icon group-hover:text-emerald-400 transition-colors"></i>
+                <span class="font-medium hide-on-collapse whitespace-nowrap">Inicio</span>
+            </a>
+            
+            <div class="hide-on-collapse px-4 pb-3 text-[10px] font-bold text-stone-600 uppercase tracking-widest transition-opacity duration-200">Explorar</div>
+            
+            <a href="exploracion.html" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl text-stone-400 hover:bg-white/5 hover:text-white transition-all group">
+                <i data-lucide="compass" class="h-5 w-5 mr-3 nav-icon group-hover:text-emerald-400 transition-colors"></i>
+                <span class="font-medium hide-on-collapse whitespace-nowrap">Exploración</span>
+            </a>
+            <a href="campana.html" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl text-stone-400 hover:bg-white/5 hover:text-white transition-all group">
+                <i data-lucide="megaphone" class="h-5 w-5 mr-3 nav-icon group-hover:text-emerald-400 transition-colors"></i>
+                <span class="font-medium hide-on-collapse whitespace-nowrap">Campaña</span>
+            </a>
+            <!-- Enlace Activo para esta página -->
+            <a href="recursos.html" class="nav-item w-full flex items-center px-4 py-3.5 rounded-xl text-white active-link transition-all group">
+                <i data-lucide="book-open" class="h-5 w-5 mr-3 nav-icon text-emerald-400 transition-colors"></i>
+                <span class="font-medium hide-on-collapse whitespace-nowrap">Recurso</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Overlay Móvil -->
+    <div id="overlay" onclick="toggleMobileMenu()" class="fixed inset-0 bg-stone-900/80 z-40 hidden md:hidden backdrop-blur-md transition-opacity"></div>
+
+    <!-- 2. CONTENIDO PRINCIPAL -->
+    <div class="flex-1 flex flex-col h-screen relative w-full bg-[#f8fafc] overflow-hidden">
+        
+        <button onclick="toggleMobileMenu()" class="md:hidden absolute top-6 left-6 z-40 p-3 bg-white/80 backdrop-blur-md text-stone-600 hover:bg-white rounded-full shadow-lg border border-stone-200 transition-all hover:scale-110 z-50">
+            <i data-lucide="menu" class="h-6 w-6"></i>
+        </button>
+
+        <!-- Barra Superior con Pestañas -->
+        <div class="bg-white/80 backdrop-blur-md border-b border-stone-200 sticky top-0 z-30 shadow-sm">
+            <div class="relative flex items-center overflow-x-auto no-scrollbar py-3 px-4 md:px-8 gap-4" id="tabs-container">
+                
+                <!-- Indicador Deslizante -->
+                <div id="tab-indicator" class="absolute bottom-0 h-1 bg-emerald-500 rounded-t-full transition-all duration-300 ease-out z-10" style="height: 3px; bottom: 0;"></div>
+
+                <!-- Pestaña 1: Informe Grupal -->
+                <button onclick="switchSection('informe')" class="tab-btn flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-lg hover:bg-stone-50" id="tab-informe">
+                    <i data-lucide="file-text" class="h-4 w-4"></i> Informe Grupal
+                </button>
+
+                <!-- Pestaña 2: Galería Multimedia -->
+                <button onclick="switchSection('galeria')" class="tab-btn flex items-center gap-2 text-sm font-bold px-4 py-2 rounded-lg hover:bg-stone-50" id="tab-galeria">
+                    <i data-lucide="images" class="h-4 w-4"></i> Galería Multimedia
+                </button>
+
+            </div>
+        </div>
+
+        <main class="flex-1 overflow-y-auto scroll-smooth p-6 md:p-10 bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0]">
+
+            <!-- Contenedor General de Secciones -->
+            <div class="max-w-6xl mx-auto space-y-10">
+
+                <!-- SECCIÓN 1: INFORME GRUPAL -->
+                <div id="section-informe" class="content-section animate-fade-in-up">
+                    
+                    <!-- Cabecera del Proyecto -->
+                    <div class="bg-white rounded-3xl p-8 shadow-xl border-2 border-emerald-100 mb-10 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-8 opacity-10"><i data-lucide="lightbulb" class="w-32 h-32 text-emerald-500"></i></div>
+                        
+                        <h1 class="text-3xl font-extrabold text-stone-900 mb-2">
+                            <span class="text-emerald-600">Proyecto de Campo:</span> "Merendón experience: de la Montaña a la Marca"
+                        </h1>
+                        <p class="text-stone-600 mb-6 font-medium">Asignatura: <strong class="text-blue-700">Mercadotecnia Turística</strong></p>
+
+                        <!-- Catedrática con Emoji -->
+                        <div class="bg-stone-50 p-4 rounded-xl flex items-center gap-4 border border-stone-200 participant-card">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center shrink-0 text-2xl teacher-avatar">
+                                👩‍🏫
+                            </div>
+                            <div>
+                                <p class="text-xs text-stone-500 uppercase font-bold tracking-wider">Catedrática</p>
+                                <p class="text-lg font-bold text-stone-800 participant-name transition-all">Master María del Carmen Murillo</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Participantes -->
+                    <h2 class="text-2xl font-bold text-stone-800 mb-6 flex items-center gap-3">
+                        <i data-lucide="users" class="w-6 h-6 text-emerald-600"></i> Participantes
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+                        
+                        <!-- Tarjeta de Participantes con Emojis Sencillos -->
+                        <div class="participant-card bg-white p-5 rounded-xl border border-stone-100 flex items-center gap-4">
+                            <div class="participant-icon">
+                                👩‍🎓
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-stone-800 participant-name transition-all">Jessenia Rodríguez</h4>
+                                <p class="text-sm text-stone-500 flex items-center gap-1 mt-1"><i data-lucide="hash" class="w-4 h-4 text-emerald-500"></i> 32205010050</p>
+                            </div>
+                        </div>
+                        <div class="participant-card bg-white p-5 rounded-xl border border-stone-100 flex items-center gap-4">
+                            <div class="participant-icon">
+                                👩‍🎓
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-stone-800 participant-name transition-all">Margoth Pineda</h4>
+                                <p class="text-sm text-stone-500 flex items-center gap-1 mt-1"><i data-lucide="hash" class="w-4 h-4 text-emerald-500"></i> 119050101096</p>
+                            </div>
+                        </div>
+                        <div class="participant-card bg-white p-5 rounded-xl border border-stone-100 flex items-center gap-4">
+                            <div class="participant-icon">
+                                👩‍🎓
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-stone-800 participant-name transition-all">Keren Urbina</h4>
+                                <p class="text-sm text-stone-500 flex items-center gap-1 mt-1"><i data-lucide="hash" class="w-4 h-4 text-emerald-500"></i> 12305010029</p>
+                            </div>
+                        </div>
+                        <div class="participant-card bg-white p-5 rounded-xl border border-stone-100 flex items-center gap-4">
+                            <div class="participant-icon">
+                                👩‍🎓
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-stone-800 participant-name transition-all">Lourdes Pineda</h4>
+                                <p class="text-sm text-stone-500 flex items-center gap-1 mt-1"><i data-lucide="hash" class="w-4 h-4 text-emerald-500"></i> 11705010136</p>
+                            </div>
+                        </div>
+                        <div class="participant-card bg-white p-5 rounded-xl border border-stone-100 flex items-center gap-4">
+                            <div class="participant-icon">
+                                👩‍🎓
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-stone-800 participant-name transition-all">Nividia Sorto</h4>
+                                <p class="text-sm text-stone-500 flex items-center gap-1 mt-1"><i data-lucide="hash" class="w-4 h-4 text-emerald-500"></i> 12205010031</p>
+                            </div>
+                        </div>
+                        <div class="participant-card bg-white p-5 rounded-xl border border-stone-100 flex items-center gap-4">
+                            <div class="participant-icon">
+                                👩‍🎓
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg text-stone-800 participant-name transition-all">Fabiola Zuniga</h4>
+                                <p class="text-sm text-stone-500 flex items-center gap-1 mt-1"><i data-lucide="hash" class="w-4 h-4 text-emerald-500"></i> 11705010100</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Botones de Acciones del Informe (MOVIMIENTO Y DISEÑO AMIGABLE) -->
+                    <div class="flex flex-wrap gap-4 justify-center mt-10 pt-6 border-t border-stone-200">
+                        <button onclick="openPdfModal()" class="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white font-bold rounded-full shadow-lg hover:bg-emerald-700 transition-all active:scale-95 transform hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-emerald-500/50">
+                            <i data-lucide="eye" class="w-5 h-5"></i> Visualizar Informe
+                        </button>
+                        <button onclick="downloadPdf()" class="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white font-bold rounded-full shadow-lg hover:bg-blue-700 transition-all active:scale-95 transform hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/50">
+                            <i data-lucide="download" class="w-5 h-5"></i> Descargar Informe
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: GALERÍA MULTIMEDIA -->
+                <div id="section-galeria" class="content-section hidden animate-fade-in-up">
+                    <h2 class="text-2xl font-bold text-stone-800 mb-6 flex items-center gap-3">
+                        <i data-lucide="images" class="w-6 h-6 text-blue-600"></i> Galería de Campo
+                    </h2>
+
+                    <!-- Contenedor Principal de Video (NUEVO) -->
+                    <h3 class="text-xl font-bold text-stone-700 mb-4 flex items-center gap-2">
+                        <i data-lucide="film" class="w-5 h-5 text-red-500"></i> Video Principal: Informe Final
+                    </h3>
+                    <div id="main-video-container" class="mb-10 w-full rounded-xl overflow-hidden shadow-2xl relative" onclick="openMediaModal(0)">
+                        <!-- El video principal (Index 0) se inyecta aquí -->
+                    </div>
+
+
+                    <!-- Archivos de Apoyo -->
+                    <h3 class="text-xl font-bold text-stone-700 mb-4 flex items-center gap-2">
+                        <i data-lucide="grid-3x3" class="w-5 h-5 text-emerald-600"></i> Archivos de Apoyo (Fotos y Clips)
+                    </h3>
+                    <!-- Contenedor de la Galería -->
+                    <div id="media-grid" class="media-grid">
+                        <!-- Las tarjetas de multimedia se inyectan aquí mediante JS -->
+                    </div>
+
+                    <div class="mt-8 p-6 bg-stone-100 rounded-2xl text-stone-600">
+                        <p class="text-sm italic">Haga clic en cualquier elemento para verlo en pantalla completa. Los videos se reproducen automáticamente.</p>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Pie de Página Falso -->
+            <footer class="mt-12 pb-2 text-center border-t border-stone-200 pt-8">
+                <p class="text-[10px] text-stone-400 font-bold uppercase tracking-widest">Sierra del Merendón</p>
+                <p class="text-[9px] text-stone-400">© 2025 Parque Nacional El Cusuco</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <!-- Modal de Visualización de PDF (Ventana Flotante) -->
+    <div id="pdfModal" class="fixed inset-0 bg-stone-900/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4 transition-opacity duration-300">
+        <!-- Contenedor del Modal -->
+        <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-5xl h-full max-h-[90vh] flex flex-col transform scale-100 transition-transform duration-300">
+            
+            <!-- Encabezado del Modal -->
+            <div class="flex items-center justify-between p-4 border-b border-stone-200">
+                <h3 class="text-xl font-bold text-stone-800">Visualización del Informe Grupal</h3>
+                <button onclick="closePdfModal()" class="text-stone-500 hover:text-stone-800 p-2 rounded-full hover:bg-stone-100 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <!-- Cuerpo del Iframe -->
+            <div class="flex-1 p-0 overflow-hidden">
+                <!-- Iframe para cargar el PDF de Google Drive -->
+                <iframe id="pdfIframe" src="" frameborder="0" class="w-full h-full rounded-b-xl bg-stone-50" title="Visor de PDF del Informe Grupal" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lightbox Modal para Galería Multimedia -->
+    <div id="mediaModal" class="fixed inset-0 bg-stone-900/95 backdrop-blur-md z-[110] hidden items-center justify-center p-4 transition-opacity duration-300">
+        <div class="relative w-full max-w-4xl max-h-[90vh] flex flex-col transform scale-100 transition-transform duration-300">
+            
+            <!-- Contenedor del Media (inyectado por JS) -->
+            <div id="mediaContent" class="bg-black rounded-lg shadow-2xl overflow-hidden aspect-video w-full">
+                <!-- Media content goes here -->
+            </div>
+            
+            <!-- Botón de Cierre -->
+            <button onclick="closeMediaModal()" class="absolute -top-12 right-0 md:-right-12 text-white hover:text-emerald-400 p-2 transition-colors">
+                <i data-lucide="x-circle" class="w-10 h-10"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- Scripts -->
+    <script>
+        lucide.createIcons();
+
+        // -----------------------
+        // 1. DATA PARA EL SITIO
+        // -----------------------
+        const PDF_ID = '1w34d2WBL8YBGt7Jjx_ba7XwNlPICB-Qx';
+        const PDF_VIEW_URL = `https://drive.google.com/file/d/${PDF_ID}/preview`;
+        const PDF_DOWNLOAD_URL = `https://drive.google.com/uc?export=download&id=${PDF_ID}`;
+
+        const MEDIA_ITEMS = [
+            // NUEVO VIDEO PRINCIPAL (Index 0)
+            { id: 0, type: 'video', url: 'https://www.dropbox.com/scl/fi/1uodfjt0ebpl4ughsgd8t/cusuco.mp4?rlkey=s7bf7tmkt90l5c0bijidlkh1z&raw=1', title: 'Video Principal: Informe Final Merendón Experience' },
+            // Archivos de Apoyo (Index 1 en adelante)
+            { id: 1, type: 'video', url: 'https://www.dropbox.com/scl/fi/71l3r63f13x8sxvrbvbs6/20251207_094326.mp4?rlkey=st4sp3tjsjm09t0mua63b41ds&raw=1', title: 'Video 1: Sendero y Bosque' },
+            { id: 2, type: 'video', url: 'https://www.dropbox.com/scl/fi/bj2r3il0qpiqjicp1kb0a/20251207_101757.mp4?rlkey=605thjaria8kide2qs66ymetx&raw=1', title: 'Video 2: Detalle de Flora' },
+            { id: 3, type: 'video', url: 'https://www.dropbox.com/scl/fi/d80p1wrcqtn3psrtfbpsj/20251207_142628.mp4?rlkey=ir5njm3j4yd3g43tf0ntj95yr&raw=1', title: 'Video 3: Grupo en la Montaña' },
+            { id: 4, type: 'image', url: 'https://www.dropbox.com/scl/fi/xd2zgqa00nd092vnptale/IMG-20251212-WA0241.jpg?rlkey=4pgkaqrhc5g23ok8f2xbjgta9&raw=1', title: 'Foto 1: Vista al Bosque' },
+            { id: 5, type: 'image', url: 'https://www.dropbox.com/scl/fi/bnyget681oryxg7zhqdyn/IMG-20251212-WA0246.jpg?rlkey=jzkccwdji0k5uo9j6u2f2y2ag&raw=1', title: 'Foto 2: Cielo y Vistas' },
+            { id: 6, type: 'video', url: 'https://www.dropbox.com/scl/fi/n91zqcaeefs3mbn4z0e3c/lv_0_20251207172724.mp4?rlkey=uuvydwq6277sxxxan0jqlb1qe&raw=1', title: 'Video 4: Panorámica de la Montaña' },
+            { id: 7, type: 'image', url: 'https://www.dropbox.com/scl/fi/s6qnvcky3dxxw8ldb0ev2/Imagen-de-WhatsApp-2025-12-12-a-las-18.53.18_ef76b5ca.jpg?rlkey=8kkknj8b0rj3hq6alhzysen43&raw=1', title: 'Foto 3: Detalle de Flora' },
+            { id: 8, type: 'image', url: 'https://www.dropbox.com/scl/fi/x5dxteh0zq6bnwjuo3i29/Imagen-de-WhatsApp-2025-12-12-a-las-18.53.18_e2b8384b.jpg?rlkey=bcpnvrvpr56dwjechyzidq2fj&raw=1', title: 'Foto 4: Bosque de Niebla' },
+            { id: 9, type: 'image', url: 'https://www.dropbox.com/scl/fi/h2nad2ld3mur5p096ud0r/Imagen-de-WhatsApp-2025-12-12-a-las-18.53.18_4afef4e0.jpg?rlkey=3y2gadni72owx0bjyzpt2soha&raw=1', title: 'Foto 5: Río / Sendero' },
+            { id: 10, type: 'image', url: 'https://www.dropbox.com/scl/fi/zgohzckgk7gp5bwd4p7eh/Imagen-de-WhatsApp-2025-12-12-a-las-18.53.18_1c1a6280.jpg?rlkey=o3aa8rtpegdq424ymtzyba06s&raw=1', title: 'Foto 6: Sendero Húmedo' },
+            { id: 11, type: 'image', url: 'https://www.dropbox.com/scl/fi/qx8qnk8cqnbq139vjd2yw/Imagen-de-WhatsApp-2025-12-12-a-las-18.53.18_8ad6113f.jpg?rlkey=ncaanl9m6zehm10w6z4r3oszp&raw=1', title: 'Foto 7: Grupo y Lluvias' },
+            { id: 12, type: 'video', url: 'https://www.dropbox.com/scl/fi/57ag9spx2vmyfktns6lgi/Video-de-WhatsApp-2025-12-12-a-las-18.37.59_42153ff2.mp4?rlkey=6fz2t47im0pmm8c9q66hf1s8a&raw=1', title: 'Video 5: Sendero en Lluvia' },
+            { id: 13, type: 'image', url: 'https://www.dropbox.com/scl/fi/af3ct949rhq79p29hje29/Imagen-de-WhatsApp-2025-12-12-a-las-18.53.19_8575fac0.jpg?rlkey=jo65hy8rczbi1sgmgyl4j5bpo&raw=1', title: 'Foto 8: Vista Panorámica' },
+            { id: 14, type: 'video', url: 'https://www.dropbox.com/scl/fi/kfwbxwjga1oqn25gu4ba7/20251207_103651.mp4?rlkey=f9iwbtuxbld5dg8ct50ast7xl&raw=1', title: 'Video 6: Cascada Lejana' },
+            { id: 15, type: 'video', url: 'https://www.dropbox.com/scl/fi/a72wvdebluunbm03xjngz/20251207_083426.mp4?rlkey=94un7aslht1bvudrot8jxqljo&raw=1', title: 'Video 7: Inicio de Ruta' },
+            { id: 16, type: 'video', url: 'https://www.dropbox.com/scl/fi/ybp22eoz72yxtcsx3zv00/20251207_075421.mp4?rlkey=vkixrwe0bj67c1wnyc9ntddet&raw=1', title: 'Video 8: Mañana en el Parque' },
+            { id: 17, type: 'video', url: 'https://www.dropbox.com/scl/fi/actw4vfxcy1em8e6bgsj0/20251207_094723.mp4?rlkey=km2i4v4cl01i5q8vrr48v2f0q&raw=1', title: 'Video 9: Cruce de Río' },
+            { id: 18, type: 'video', url: 'https://www.dropbox.com/scl/fi/jcd0uuw0lt65e35ek21d4/20251207_075355.mp4?rlkey=oxbjoeqmu7kw5tesc9a71fafu&raw=1', title: 'Video 10: Vistas Iniciales' },
+            { id: 19, type: 'video', url: 'https://www.dropbox.com/scl/fi/vz68r7r1swza90saejciy/20251207_083435.mp4?rlkey=hgrlveeea22jn7lnkfeg9pgzz&raw=1', title: 'Video 11: Detalle de Caminata' },
+        ];
+
+
+        // -----------------------
+        // 2. FUNCIONES GENERALES
+        // -----------------------
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const toggleIcon = document.getElementById('toggle-icon');
+
+        function toggleSidebar() { 
+            sidebar.classList.toggle('collapsed'); 
+            toggleIcon.classList.toggle('rotate-180'); 
+        }
+        function toggleMobileMenu() { 
+            const isClosed = sidebar.classList.contains('-translate-x-full'); 
+            if (isClosed) { 
+                sidebar.classList.remove('-translate-x-full'); 
+                overlay.classList.remove('hidden'); 
+            } else { 
+                closeMobileMenu(); 
+            } 
+        }
+        function closeMobileMenu() { 
+            sidebar.classList.add('-translate-x-full'); 
+            overlay.classList.add('hidden'); 
+        }
+        function playCusquitoAudio() {
+            const audio = new Audio("https://www.dropbox.com/scl/fi/r0clqvlthjsfhl9hobbuu/INICIO-HOME.MP3?rlkey=fwi7yz6p4eqrtht8pqc6bwy72&st=3q3nw3d0&raw=1");
+            audio.volume = 0.8;
+            audio.play().catch(e => console.log("Error de audio:", e));
+        }
+
+        // Lógica de Pestañas (Tabs)
+        function switchSection(sectionId) {
+            const section = document.getElementById('section-' + sectionId);
+            const tab = document.getElementById('tab-' + sectionId);
+
+            if (!section || !tab) return;
+
+            document.querySelectorAll('.content-section').forEach(el => {
+                el.classList.add('hidden');
+                el.classList.remove('animate-slide-in');
+            });
+            
+            section.classList.remove('hidden');
+            void section.offsetWidth; 
+            section.classList.add('animate-slide-in');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-emerald-600', 'bg-stone-50');
+                btn.classList.add('text-stone-500');
+            });
+
+            tab.classList.add('active', 'text-emerald-600', 'bg-stone-50');
+            tab.classList.remove('text-stone-500');
+
+            const indicator = document.getElementById('tab-indicator');
+            if (indicator) {
+                const relativeLeft = tab.offsetLeft;
+                indicator.style.width = `${tab.offsetWidth}px`;
+                indicator.style.left = `${relativeLeft}px`;
+                tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+            
+            lucide.createIcons();
+            
+            // Si cambiamos a la galería, la renderizamos
+            if (sectionId === 'galeria') {
+                renderMediaGallery();
+            }
+        }
+
+
+        // -----------------------
+        // 3. FUNCIONES DE PDF
+        // -----------------------
+
+        function openPdfModal() {
+            const modal = document.getElementById('pdfModal');
+            const iframe = document.getElementById('pdfIframe');
+            
+            iframe.src = PDF_VIEW_URL;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closePdfModal() {
+            const modal = document.getElementById('pdfModal');
+            const iframe = document.getElementById('pdfIframe');
+
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+
+            iframe.src = "";
+        }
+
+        function downloadPdf() {
+            const link = document.createElement('a');
+            link.href = PDF_DOWNLOAD_URL;
+            link.target = '_blank';
+            link.download = 'Informe_Grupal_Merendon.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --------------------------
+        // 4. FUNCIONES DE GALERÍA (LIGHTBOX & RENDER)
+        // --------------------------
+
+        function openMediaModal(index) {
+            const modal = document.getElementById('mediaModal');
+            const content = document.getElementById('mediaContent');
+            const item = MEDIA_ITEMS[index];
+
+            content.innerHTML = ''; // Limpiar contenido anterior
+            
+            content.classList.remove('aspect-video', 'h-full', 'p-4');
+            content.classList.add('flex', 'items-center', 'justify-center'); 
+
+            if (item.type === 'video') {
+                content.classList.add('aspect-video', 'p-4');
+
+                content.innerHTML = `
+                    <video controls autoplay loop class="w-full h-full object-contain rounded-lg">
+                        <source src="${item.url}" type="video/mp4">
+                        Tu navegador no soporta el tag de video.
+                    </video>
+                `;
+            } else if (item.type === 'image') {
+                content.classList.add('h-full', 'p-4');
+
+                content.innerHTML = `
+                    <img src="${item.url}" alt="${item.title}" class="object-contain rounded-lg" style="max-width: 100%; max-height: 100%;" />
+                `;
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.classList.add('overflow-hidden');
+            
+            lucide.createIcons();
+        }
+
+        function closeMediaModal() {
+            const modal = document.getElementById('mediaModal');
+            const content = document.getElementById('mediaContent');
+
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            
+            // Detener la reproducción de videos y limpiar el contenido
+            content.innerHTML = '';
+        }
+
+
+        function renderMediaGallery() {
+            const mainContainer = document.getElementById('main-video-container');
+            const grid = document.getElementById('media-grid');
+            grid.innerHTML = ''; 
+            mainContainer.innerHTML = ''; // Limpiar el contenedor principal
+
+            // 1. Renderizar Video Principal (Index 0)
+            const mainItem = MEDIA_ITEMS[0];
+            
+            // Crear el contenido del reproductor principal
+            const mainContent = `
+                <div class="media-content-wrapper aspect-video">
+                    <video controls muted playsinline class="w-full h-auto object-cover" src="${mainItem.url}#t=0.1" ></video>
+                    <div class="play-icon !p-6">
+                        <i data-lucide="play-circle" class="w-12 h-12"></i>
+                    </div>
+                </div>
+                <span class="file-tag flex items-center gap-1 !p-2 !bg-red-600">
+                    <i data-lucide="award" class="w-4 h-4"></i> PRINCIPAL
+                </span>
+            `;
+            
+            mainContainer.innerHTML = mainContent;
+            
+            // Hacer el video principal clicable para abrir en Lightbox
+            mainContainer.onclick = () => openMediaModal(0);
+
+
+            // 2. Renderizar Archivos de Apoyo (Index 1 en adelante)
+            for (let index = 1; index < MEDIA_ITEMS.length; index++) {
+                const item = MEDIA_ITEMS[index];
+                
+                let thumbnailContent;
+                let tagText = item.type === 'video' ? 'Video' : 'Foto';
+                let tagIcon = item.type === 'video' ? 'video' : 'camera';
+                
+                if (item.type === 'video') {
+                    thumbnailContent = `
+                        <div class="media-content-wrapper">
+                            <video preload="metadata" muted playsinline class="w-full h-auto object-cover" src="${item.url}#t=0.1" ></video>
+                            <div class="play-icon !p-3">
+                                <i data-lucide="play-circle" class="w-6 h-6"></i>
+                            </div>
+                        </div>
+                    `;
+                } else if (item.type === 'image') {
+                    thumbnailContent = `
+                        <div class="media-content-wrapper">
+                            <img src="${item.url}" alt="${item.title}" class="w-full h-auto object-cover" />
+                        </div>
+                    `;
+                }
+
+                const card = document.createElement('div');
+                card.className = "media-card bg-white rounded-xl transition-all duration-300 transform hover:shadow-2xl flex items-center justify-center";
+                card.setAttribute('onclick', `openMediaModal(${index})`);
+                card.innerHTML = `
+                    ${thumbnailContent}
+                    <span class="file-tag flex items-center gap-1">
+                        <i data-lucide="${tagIcon}" class="w-3 h-3"></i> 
+                        ${tagText}
+                    </span>
+                `;
+
+                grid.appendChild(card);
+            }
+
+            // Recrear iconos de Lucide después de inyectar el contenido dinámico
+            lucide.createIcons();
+        }
+
+
+        window.addEventListener('load', () => {
+            lucide.createIcons();
+            // Inicializar la primera pestaña al cargar
+            switchSection('informe');
+            // Asegurarse de que el renderizado inicial de la galería ocurra si la pestaña activa es 'galeria'
+            if (document.getElementById('section-galeria') && !document.getElementById('section-galeria').classList.contains('hidden')) {
+                 renderMediaGallery();
+            }
+        });
+    </script>
+</body>
+</html>
